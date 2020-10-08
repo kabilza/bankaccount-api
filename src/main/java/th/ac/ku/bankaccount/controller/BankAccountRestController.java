@@ -1,9 +1,14 @@
 package th.ac.ku.bankaccount.controller;
 
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import th.ac.ku.bankaccount.data.BankAccountRepository;
 import th.ac.ku.bankaccount.model.BankAccount;
+import th.ac.ku.bankaccount.model.Money;
 
+
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -54,4 +59,34 @@ public class BankAccountRestController {
         return record;
     }
 
+    @PutMapping("/deposit/{id}")
+    public BankAccount deposit(@PathVariable int id,
+                               @RequestBody Money money) {
+        if (money.getMoney() <= 0) {
+            throw new Error("Amount to be deposit should be positive");
+        } else {
+            System.out.println("Deposit");
+            BankAccount record = repository.findById(id).get();
+            double balance = record.getBalance() + money.getMoney();
+            record.setBalance(balance);
+            repository.save(record);
+            return record;
+        }
+    }
+
+    @PutMapping("/withdraw/{id}")
+    public BankAccount withdraw(@PathVariable int id,
+                                @RequestBody Money money) {
+        if (money.getMoney() <= 0) {
+            throw new Error("Amount to be deposit should be positive");
+        } else {
+            System.out.println("Withdraw");
+            BankAccount record = repository.findById(id).get();
+            double balance = record.getBalance() - money.getMoney();
+            record.setBalance(balance);
+            repository.save(record);
+            return record;
+        }
+    }
 }
+
